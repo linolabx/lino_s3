@@ -21,9 +21,17 @@ type LinoS3Object struct {
 	interceptors []*Interceptor
 }
 
+func (s *LinoS3Object) Piece(start int64, end int64) *LinoS3Piece {
+	return &LinoS3Piece{s.sess, s.bucket, s.key, start, end}
+}
+
 func (s *LinoS3Object) UseInterceptors(interceptors ...*Interceptor) *LinoS3Object {
 	s.interceptors = interceptors
 	return s
+}
+
+func (s *LinoS3Object) HasInterceptors() bool {
+	return len(s.interceptors) > 0
 }
 
 func (s *LinoS3Object) Get() (*s3.GetObjectOutput, error) {
@@ -220,4 +228,8 @@ func (s *LinoS3Object) WriteCSV(v interface{}) error {
 	}
 
 	return s.WriteBuffer(data, "text/csv")
+}
+
+func (s *LinoS3Object) Key() string {
+	return s.key
 }

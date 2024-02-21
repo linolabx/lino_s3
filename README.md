@@ -15,6 +15,8 @@ LinoS3Bucket
   -> UseInterceptors(...interceptors) -> LinoS3Bucket
   -> Object(key) -> LinoS3Object
   -> SubPath(subPath) -> LinoS3Path
+  -> Piece(objectKey, start, end) -> LinoS3Piece
+  -> PieceByKey(pieceKey) -> LinoS3Piece
 
 LinoS3Path
   -> UseInterceptors(...interceptors) -> LinoS3Path
@@ -23,6 +25,8 @@ LinoS3Path
 
 LinoS3Object
   -> UseInterceptors(...interceptors) -> LinoS3Path
+  -> HasInterceptors() -> bool
+  -> Piece(start, end) -> LinoS3Piece
 
   -> Get() -> *s3.GetObjectOutput
   -> Put(s3.PutObjectInput) -> *s3.PutObjectOutput
@@ -43,6 +47,20 @@ LinoS3Object
   -> WriteJSON(&value)
   -> WriteCBOR(&value)
   -> WriteCSV(&value)
+
+  -> Key() -> string // pieceKey
+
+LinoS3Piece
+  -> Get() -> *s3.GetObjectOutput
+
+  -> ReadTo(io.Writer)
+  -> ReadBuffer() -> buffer
+  -> ReadString() -> string
+  -> ReadJSON(&value)
+  -> ReadCBOR(&value)
+  -> ReadCSV(&value)
+
+  -> Key() -> string // pieceKey
 ```
 
 interceptors:

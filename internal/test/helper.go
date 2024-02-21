@@ -20,6 +20,10 @@ func GetS3Session() *session.Session {
 	return sess
 }
 
+func GetS3Bucket() *lino_s3.LinoS3Bucket {
+	return lino_s3.NewLinoS3(GetS3Session()).Bucket("lino-stor")
+}
+
 func GetS3Object(subPath string, key string) *lino_s3.LinoS3Object {
-	return lino_s3.NewLinoS3(GetS3Session()).Bucket("lino-stor").SubPath(subPath).Object(key)
+	return GetS3Bucket().SubPath(subPath).Object(key)
 }
