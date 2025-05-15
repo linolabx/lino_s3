@@ -5,6 +5,11 @@ High level S3 wrapper for Go.
 ## Usage
 
 ```plaintext
+[Must]LoadS3(dsn string) -> LinoS3
+[Must]LoadS3Bucket(dsn string) -> LinoS3Bucket
+[Must]LoadS3Object(dsn string) -> LinoS3Object
+[Must]LoadS3Path(dsn string) -> LinoS3Path
+
 NewLinoS3(client *s3.Client) -> LinoS3
 
 LinoS3

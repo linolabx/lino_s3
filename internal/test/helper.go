@@ -1,6 +1,8 @@
 package test
 
 import (
+	"fmt"
+
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/geektheripper/vast-dsn/s3_client"
 	"github.com/geektheripper/vast-dsn/s3_dsn"
@@ -17,9 +19,9 @@ func GetS3Client() *s3.Client {
 }
 
 func GetS3Bucket() *lino_s3.LinoS3Bucket {
-	return lino_s3.NewLinoS3(GetS3Client()).Bucket("lino-stor")
+	return lino_s3.MustLoadS3Bucket("s3://minioadmin:minioadmin@localhost:9000/lino-stor?use-path-style=true&protocol=http")
 }
 
 func GetS3Object(subPath string, key string) *lino_s3.LinoS3Object {
-	return GetS3Bucket().SubPath(subPath).Object(key)
+	return lino_s3.MustLoadS3Object(fmt.Sprintf("s3://minioadmin:minioadmin@localhost:9000/lino-stor/%s/%s?use-path-style=true&protocol=http", subPath, key))
 }
