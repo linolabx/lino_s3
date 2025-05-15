@@ -55,23 +55,10 @@ func (s *LinoS3Object) Get() (*s3.GetObjectOutput, error) {
 func (s *LinoS3Object) PresignGet(optFns ...func(*s3.PresignOptions)) (*v4.PresignedHTTPRequest, error) {
 	presigner := s3.NewPresignClient(s.client)
 
-	result, err := presigner.PresignGetObject(context.Background(), &s3.GetObjectInput{
+	return presigner.PresignGetObject(context.Background(), &s3.GetObjectInput{
 		Bucket: &s.bucket,
 		Key:    &s.key,
 	}, optFns...)
-
-	return result, err
-}
-
-func (s *LinoS3Object) PresignPut(input s3.PutObjectInput, optFns ...func(*s3.PresignOptions)) (*v4.PresignedHTTPRequest, error) {
-	presigner := s3.NewPresignClient(s.client)
-
-	input.Bucket = &s.bucket
-	input.Key = &s.key
-
-	result, err := presigner.PresignPutObject(context.Background(), &input, optFns...)
-
-	return result, err
 }
 
 func (s *LinoS3Object) Head() (*s3.HeadObjectOutput, error) {
@@ -105,6 +92,15 @@ func (s *LinoS3Object) Put(input s3.PutObjectInput) (*s3.PutObjectOutput, error)
 	}
 
 	return postResolve(s.interceptors, usePostPut, out)
+}
+
+func (s *LinoS3Object) PresignPut(input s3.PutObjectInput, optFns ...func(*s3.PresignOptions)) (*v4.PresignedHTTPRequest, error) {
+	presigner := s3.NewPresignClient(s.client)
+
+	input.Bucket = &s.bucket
+	input.Key = &s.key
+
+	return presigner.PresignPutObject(context.Background(), &input, optFns...)
 }
 
 func (s *LinoS3Object) Upload(input s3.PutObjectInput) (*manager.UploadOutput, error) {
