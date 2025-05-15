@@ -6,7 +6,7 @@ import (
 	"errors"
 	"sync"
 
-	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/fxamacker/cbor/v2"
 	"github.com/linolabx/lino_s3"
 )

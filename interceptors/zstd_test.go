@@ -14,7 +14,7 @@ func TestZstd(t *testing.T) {
 	}
 
 	bookObj := test.
-		GetS3Object("cbor:v2", "book.cbor.zstd").
+		GetS3Object("cbor-v2", "book.cbor.zstd").
 		UseInterceptors(interceptors.Zstd)
 
 	t.Cleanup(func() { bookObj.Delete() })

@@ -1,16 +1,16 @@
 package lino_s3
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
 type LinoS3Piece struct {
-	sess   *session.Session
+	client *s3.Client
 	bucket string
 	key    string
 
@@ -21,7 +21,7 @@ type LinoS3Piece struct {
 func (s *LinoS3Piece) Get() (*s3.GetObjectOutput, error) {
 	Range := fmt.Sprintf("bytes=%d-%d", s.start, s.end-1)
 
-	out, err := s3.New(s.sess).GetObject(&s3.GetObjectInput{
+	out, err := s.client.GetObject(context.Background(), &s3.GetObjectInput{
 		Bucket: &s.bucket,
 		Key:    &s.key,
 		Range:  &Range,

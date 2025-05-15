@@ -1,11 +1,11 @@
 package lino_s3
 
 import (
-	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
 type LinoS3 struct {
-	sess *session.Session
+	client *s3.Client
 
 	interceptors []*Interceptor
 }
@@ -15,10 +15,10 @@ func (s *LinoS3) UseInterceptors(interceptors ...*Interceptor) *LinoS3 {
 	return s
 }
 
-func NewLinoS3(sess *session.Session) *LinoS3 {
-	return &LinoS3{sess: sess}
+func NewLinoS3(client *s3.Client) *LinoS3 {
+	return &LinoS3{client: client}
 }
 
 func (s *LinoS3) Bucket(bucketname string) *LinoS3Bucket {
-	return &LinoS3Bucket{s.sess, bucketname, s.interceptors}
+	return &LinoS3Bucket{s.client, bucketname, s.interceptors}
 }

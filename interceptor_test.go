@@ -14,7 +14,7 @@ func TestMixedInterceptors(t *testing.T) {
 	}
 
 	bookObj := test.
-		GetS3Object("cbor:v2", "book.cbor.zstd.gz").
+		GetS3Object("cbor-v2", "book.cbor.zstd.gz").
 		UseInterceptors(
 			interceptors.Gzip,
 			interceptors.Zstd,

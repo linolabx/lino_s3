@@ -4,8 +4,7 @@ import (
 	"bytes"
 	"io"
 
-	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/klauspost/compress/zstd"
 	"github.com/linolabx/lino_s3"
 )
@@ -43,7 +42,7 @@ var Zstd = &lino_s3.Interceptor{
 		input.Body = bytes.NewReader(buf.Bytes())
 		return input, nil
 	},
-	PreUpload: func(input *s3manager.UploadInput) (*s3manager.UploadInput, error) {
+	PreUpload: func(input *s3.PutObjectInput) (*s3.PutObjectInput, error) {
 		pr, pw := io.Pipe()
 		go func() {
 			zw, err := zstd.NewWriter(pw)

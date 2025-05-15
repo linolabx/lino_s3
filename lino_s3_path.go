@@ -3,11 +3,11 @@ package lino_s3
 import (
 	"path/filepath"
 
-	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
 type LinoS3Path struct {
-	sess   *session.Session
+	client *s3.Client
 	bucket string
 	path   string
 
@@ -21,7 +21,7 @@ func (s *LinoS3Path) UseInterceptors(interceptors ...*Interceptor) *LinoS3Path {
 
 func (s *LinoS3Path) SubPath(path string) *LinoS3Path {
 	return &LinoS3Path{
-		sess:         s.sess,
+		client:       s.client,
 		bucket:       s.bucket,
 		path:         filepath.Join(s.path, path),
 		interceptors: s.interceptors,
@@ -30,7 +30,7 @@ func (s *LinoS3Path) SubPath(path string) *LinoS3Path {
 
 func (s *LinoS3Path) Object(key string) *LinoS3Object {
 	return &LinoS3Object{
-		sess:         s.sess,
+		client:       s.client,
 		bucket:       s.bucket,
 		key:          filepath.Join(s.path, key),
 		interceptors: s.interceptors,

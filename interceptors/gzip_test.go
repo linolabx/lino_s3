@@ -14,7 +14,7 @@ func TestGzip(t *testing.T) {
 	}
 
 	bookObj := test.
-		GetS3Object("cbor:v2", "book.cbor.gz").
+		GetS3Object("cbor-v2", "book.cbor.gz").
 		UseInterceptors(interceptors.Gzip)
 
 	t.Cleanup(func() { bookObj.Delete() })

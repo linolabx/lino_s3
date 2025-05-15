@@ -1,8 +1,8 @@
 package lino_s3
 
 import (
-	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
 type transformer[T any] func(input T) (T, error)
@@ -16,8 +16,8 @@ type Interceptor struct {
 	PostPut    transformer[*s3.PutObjectOutput]
 	PreDelete  transformer[*s3.DeleteObjectInput]
 	PostDelete transformer[*s3.DeleteObjectOutput]
-	PreUpload  transformer[*s3manager.UploadInput]
-	PostUpload transformer[*s3manager.UploadOutput]
+	PreUpload  transformer[*s3.PutObjectInput]
+	PostUpload transformer[*manager.UploadOutput]
 }
 
 type callInterceptor[T any] func(intcpt *Interceptor, v T) (T, error)
@@ -101,14 +101,14 @@ func usePostDelete(intcpt *Interceptor, value *s3.DeleteObjectOutput) (*s3.Delet
 	return intcpt.PostDelete(value)
 }
 
-func usePreUpload(intcpt *Interceptor, value *s3manager.UploadInput) (*s3manager.UploadInput, error) {
+func usePreUpload(intcpt *Interceptor, value *s3.PutObjectInput) (*s3.PutObjectInput, error) {
 	if intcpt.PreUpload == nil {
 		return value, nil
 	}
 	return intcpt.PreUpload(value)
 }
 
-func usePostUpload(intcpt *Interceptor, value *s3manager.UploadOutput) (*s3manager.UploadOutput, error) {
+func usePostUpload(intcpt *Interceptor, value *manager.UploadOutput) (*manager.UploadOutput, error) {
 	if intcpt.PostUpload == nil {
 		return value, nil
 	}

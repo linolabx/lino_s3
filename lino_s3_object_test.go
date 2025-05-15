@@ -10,9 +10,9 @@ import (
 )
 
 func TestIoPut(t *testing.T) {
-	text := "local:" + uuid.NewString()
+	text := "local-" + uuid.NewString()
 	filename := "local.txt"
-	object := test.GetS3Object("text:v1", filename)
+	object := test.GetS3Object("text-v1", filename)
 
 	t.Cleanup(func() {
 		os.Remove(filename)
@@ -40,7 +40,7 @@ func TestIoPut(t *testing.T) {
 func TestIoGet(t *testing.T) {
 	text := "remote:" + uuid.NewString()
 	filename := "remote.txt"
-	object := test.GetS3Object("text:v1", filename)
+	object := test.GetS3Object("text-v1", filename)
 
 	t.Cleanup(func() {
 		os.Remove(filename)
@@ -67,8 +67,8 @@ func TestIoGet(t *testing.T) {
 
 func TestJSON(t *testing.T) {
 
-	violetObj := test.GetS3Object("json:v1", "violet.json")
-	gilbertObj := test.GetS3Object("json:v1", "gilbert.json")
+	violetObj := test.GetS3Object("json-v1", "violet.json")
+	gilbertObj := test.GetS3Object("json-v1", "gilbert.json")
 
 	t.Cleanup(func() {
 		violetObj.Delete()
@@ -99,7 +99,7 @@ func TestJSON(t *testing.T) {
 }
 
 func TestCBOR(t *testing.T) {
-	violetObj := test.GetS3Object("cbor:v1", "violet.cbor")
+	violetObj := test.GetS3Object("cbor-v1", "violet.cbor")
 
 	t.Cleanup(func() {
 		violetObj.Delete()
@@ -118,7 +118,7 @@ func TestCBOR(t *testing.T) {
 }
 
 func TestCSV(t *testing.T) {
-	usersObj := test.GetS3Object("csv:v1", "users.csv")
+	usersObj := test.GetS3Object("csv-v1", "users.csv")
 
 	t.Cleanup(func() {
 		usersObj.Delete()

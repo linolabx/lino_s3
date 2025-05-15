@@ -14,7 +14,7 @@ type TestPiece struct {
 }
 
 func TestS3Piece(t *testing.T) {
-	obj := test.GetS3Object("piece:v1", "test.bin")
+	obj := test.GetS3Object("piece-v1", "test.bin")
 	t.Cleanup(func() { obj.Delete() })
 
 	itemsNum := test.RandomInRange(11, 20)

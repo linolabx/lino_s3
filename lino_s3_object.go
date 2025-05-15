@@ -2,19 +2,19 @@ package lino_s3
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"io"
 
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/fxamacker/cbor/v2"
 	"github.com/gocarina/gocsv"
 	"github.com/linolabx/lino_s3/internal"
 )
 
 type LinoS3Object struct {
-	sess   *session.Session
+	client *s3.Client
 	bucket string
 	key    string
 
@@ -22,7 +22,7 @@ type LinoS3Object struct {
 }
 
 func (s *LinoS3Object) Piece(start int64, end int64) *LinoS3Piece {
-	return &LinoS3Piece{s.sess, s.bucket, s.key, start, end}
+	return &LinoS3Piece{s.client, s.bucket, s.key, start, end}
 }
 
 func (s *LinoS3Object) UseInterceptors(interceptors ...*Interceptor) *LinoS3Object {
@@ -43,7 +43,7 @@ func (s *LinoS3Object) Get() (*s3.GetObjectOutput, error) {
 		return nil, err
 	}
 
-	out, err := s3.New(s.sess).GetObject(input)
+	out, err := s.client.GetObject(context.Background(), input)
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +59,7 @@ func (s *LinoS3Object) Head() (*s3.HeadObjectOutput, error) {
 		return nil, err
 	}
 
-	out, err := s3.New(s.sess).HeadObject(input)
+	out, err := s.client.HeadObject(context.Background(), input)
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +76,7 @@ func (s *LinoS3Object) Put(input s3.PutObjectInput) (*s3.PutObjectOutput, error)
 		return nil, err
 	}
 
-	out, err := s3.New(s.sess).PutObject(_input)
+	out, err := s.client.PutObject(context.Background(), _input)
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +84,7 @@ func (s *LinoS3Object) Put(input s3.PutObjectInput) (*s3.PutObjectOutput, error)
 	return postResolve(s.interceptors, usePostPut, out)
 }
 
-func (s *LinoS3Object) Upload(input s3manager.UploadInput) (*s3manager.UploadOutput, error) {
+func (s *LinoS3Object) Upload(input s3.PutObjectInput) (*manager.UploadOutput, error) {
 	input.Bucket = &s.bucket
 	input.Key = &s.key
 
@@ -93,12 +93,12 @@ func (s *LinoS3Object) Upload(input s3manager.UploadInput) (*s3manager.UploadOut
 		return nil, err
 	}
 
-	uploader := s3manager.NewUploader(s.sess, func(u *s3manager.Uploader) {
+	uploader := manager.NewUploader(s.client, func(u *manager.Uploader) {
 		u.PartSize = 10 << 20
 		u.Concurrency = 5
 	})
 
-	out, err := uploader.Upload(_input)
+	out, err := uploader.Upload(context.Background(), _input)
 	if err != nil {
 		return nil, err
 	}
@@ -114,7 +114,7 @@ func (s *LinoS3Object) Delete() (*s3.DeleteObjectOutput, error) {
 		return nil, err
 	}
 
-	out, err := s3.New(s.sess).DeleteObject(input)
+	out, err := s.client.DeleteObject(context.Background(), input)
 	if err != nil {
 		return nil, err
 	}
@@ -184,7 +184,7 @@ func (s *LinoS3Object) ReadCSV(v interface{}) error {
 }
 
 func (s *LinoS3Object) WriteFrom(reader io.ReadCloser, contentType ...string) error {
-	_, err := s.Upload(s3manager.UploadInput{
+	_, err := s.Upload(s3.PutObjectInput{
 		Body:        reader,
 		ContentType: internal.OptionalPointer(contentType...),
 	})

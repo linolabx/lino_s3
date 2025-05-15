@@ -8,12 +8,14 @@ import (
 )
 
 func TestBasicStructureFunction(t *testing.T) {
-	sess := test.GetS3Session()
-	s3 := lino_s3.NewLinoS3(sess)
+	client := test.GetS3Client()
+	s3 := lino_s3.NewLinoS3(client)
 	bucket := s3.Bucket("lino-stor")
-	path := bucket.SubPath("text:v1")
+	path := bucket.SubPath("text-v1")
 	object := path.Object("test.txt")
-	object.WriteString("Hello, World!")
+	if err := object.WriteString("Hello, World!"); err != nil {
+		t.Fatal(err)
+	}
 
 	if str, err := object.ReadString(); str != "Hello, World!" {
 		t.Fatal(err)

@@ -21,7 +21,7 @@ func hash(data []byte) string {
 
 func TestMap(t *testing.T) {
 	bucket := test.GetS3Bucket()
-	obj := test.GetS3Object("map:v1", "test.bin")
+	obj := test.GetS3Object("map-v1", "test.bin")
 	tMap := lino_s3_map.NewMap(obj)
 	t.Cleanup(func() { tMap.Delete() })
 

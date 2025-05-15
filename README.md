@@ -5,7 +5,7 @@ High level S3 wrapper for Go.
 ## Usage
 
 ```plaintext
-NewLinoS3(sess *session.Session) -> LinoS3
+NewLinoS3(client *s3.Client) -> LinoS3
 
 LinoS3
   -> UseInterceptors(...interceptors) -> LinoS3 (sub entities will inherit these interceptors)
@@ -71,8 +71,8 @@ import (
   "github.com/linolabx/lino_s3/interceptors"
 )
 
-s3 := lino_s3.NewLinoS3(session).Bucket("bucket")
-blocksDir := bucket.SubPath("blocks:v1").UseInterceptors(interceptors.Gzip)
+s3 := lino_s3.NewLinoS3(client).Bucket("bucket")
+blocksDir := bucket.SubPath("blocks-v1").UseInterceptors(interceptors.Gzip)
 
 block SomeStruct
 blockObject := blocksDir.Object("somekey.gz").ReadCBOR(&block);
@@ -133,7 +133,7 @@ thirdMap.Get("foo1") // []byte{"bar1"}
 start minio, and default access key and secret key is `minioadmin:minioadmin`
 
 ```bash
-docker run --name lino-s3-test --rm -p 9000:9000 -p 9001:9001 quay.io/minio/minio server /data --console-address ":9001"
+docker run --name lino-s3-test --rm -p 9000:9000 -e MINIO_ROOT_USER=minioadmin -e MINIO_ROOT_PASSWORD=minioadmin minio/minio server /data
 
 docker exec -it lino-s3-test mc alias set minio http://localhost:9000 minioadmin minioadmin
 docker exec -it lino-s3-test mc mb minio/lino-stor
