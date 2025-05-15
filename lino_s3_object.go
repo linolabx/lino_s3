@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"io"
 
+	v4 "github.com/aws/aws-sdk-go-v2/aws/signer/v4"
 	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/fxamacker/cbor/v2"
@@ -49,6 +50,28 @@ func (s *LinoS3Object) Get() (*s3.GetObjectOutput, error) {
 	}
 
 	return postResolve(s.interceptors, usePostGet, out)
+}
+
+func (s *LinoS3Object) PresignGet(optFns ...func(*s3.PresignOptions)) (*v4.PresignedHTTPRequest, error) {
+	presigner := s3.NewPresignClient(s.client)
+
+	result, err := presigner.PresignGetObject(context.Background(), &s3.GetObjectInput{
+		Bucket: &s.bucket,
+		Key:    &s.key,
+	}, optFns...)
+
+	return result, err
+}
+
+func (s *LinoS3Object) PresignPut(input s3.PutObjectInput, optFns ...func(*s3.PresignOptions)) (*v4.PresignedHTTPRequest, error) {
+	presigner := s3.NewPresignClient(s.client)
+
+	input.Bucket = &s.bucket
+	input.Key = &s.key
+
+	result, err := presigner.PresignPutObject(context.Background(), &input, optFns...)
+
+	return result, err
 }
 
 func (s *LinoS3Object) Head() (*s3.HeadObjectOutput, error) {
