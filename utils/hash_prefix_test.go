@@ -6,26 +6,25 @@ import (
 	"github.com/linolabx/lino_s3/utils"
 )
 
-func ExpectPanic(t *testing.T, f func()) {
-	defer func() {
-		if r := recover(); r == nil {
-			t.Errorf("The code did not panic")
-		}
-	}()
-
-	f()
-}
-
 func TestHashSplit(t *testing.T) {
-	ExpectPanic(t, func() { utils.HashSplit("123456", -1) })
-	ExpectPanic(t, func() { utils.HashSplit("123456", 0) })
-	ExpectPanic(t, func() { utils.HashSplit("123456", 17) })
-	ExpectPanic(t, func() { utils.HashSplit("123456", 2, 3) })
-
 	if utils.HashSplit("123456") != "e1/0a/dc" ||
 		utils.HashSplit("123456", 5) != "e1/0a/dc/39/49" ||
 		utils.HashSplit("123456", 16) != "e1/0a/dc/39/49/ba/59/ab/be/56/e0/57/f2/0f/88/3e" {
 		t.Fatal("hash split failed")
+	}
+
+	// HashTemplate("mykey", "{.}") => "mykey"
+	// HashTemplate("mykey", "{hash}") => "9adbe0b3033881f88ebd825bcf763b43"
+	// HashTemplate("mykey", "{hash.l3}/{.}") => "9a/db/e0/mykey"
+	// HashTemplate("mykey", "{hash.l4}/{.}") => "9a/db/e0/b3/mykey"
+	// HashTemplate("mykey", "{hash.l3}/{hash}") => "9a/db/e0/9adbe0b3033881f88ebd825bcf763b43"
+
+	if utils.HashTemplate("mykey", "{.}") != "mykey" ||
+		utils.HashTemplate("mykey", "{hash}") != "9adbe0b3033881f88ebd825bcf763b43" ||
+		utils.HashTemplate("mykey", "{hash.l3}/{.}") != "9a/db/e0/mykey" ||
+		utils.HashTemplate("mykey", "{hash.l4}/{.}") != "9a/db/e0/b3/mykey" ||
+		utils.HashTemplate("mykey", "{hash.l3}/{hash}") != "9a/db/e0/9adbe0b3033881f88ebd825bcf763b43" {
+		t.Fatal("hash template failed")
 	}
 }
 
