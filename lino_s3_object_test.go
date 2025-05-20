@@ -142,3 +142,21 @@ Gilbert Bougainvillea,,,0
 		t.Fatal("CSV read failed")
 	}
 }
+
+func TestUnicode(t *testing.T) {
+	text := "空里流霜不觉飞，汀上白沙看不见。" + uuid.NewString()
+	filename := "春江花月夜.txt"
+	object := test.GetS3Object("text-v1", filename)
+
+	t.Cleanup(func() {
+		object.Delete()
+	})
+
+	if err := object.WriteString(text); err != nil {
+		t.Fatal(err)
+	}
+
+	if str, err := object.ReadString(); str != text {
+		t.Fatal(err)
+	}
+}
