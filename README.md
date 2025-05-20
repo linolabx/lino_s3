@@ -89,13 +89,16 @@ blockObject.WriteCBOR(&block)
 ### utils
 
 ```go
-import "github.com/linolabx/lino_s3/utils"
+import "github.com/linolabx/lino_s3"
 
-utils.HashSplit("123456") // "e1/0a/dc"
-utils.HashSplit("123456", 5) // "e1/0a/dc/39/49"
-
-utils.HashPrefix("hello.txt") // "2e/54/14/hello.txt"
-utils.HashPrefix("hello.txt", 3) // "2e/54/14/hello.txt"
+lino_s3.Hash("mykey") // "9adbe0b3033881f88ebd825bcf763b43"
+lino_s3.ShardT("mykey", "{.}") // "mykey"
+lino_s3.ShardT("mykey", "{hash}") // "9adbe0b3033881f88ebd825bcf763b43"
+lino_s3.ShardT("mykey", "{shard.l3}/{.}") // "9a/db/e0/mykey"
+lino_s3.ShardT("mykey", "{shard}/{.}") // "9a/db/e0/mykey" (defaults to shard.l3)
+lino_s3.ShardT("mykey", "{shard.l4}/{.}") // "9a/db/e0/b3/mykey"
+lino_s3.ShardT("mykey", "{shard.l2}/{hash}") // "9a/db/9adbe0b3033881f88ebd825bcf763b43"
+lino_s3.ShardT("mykey", "{shard}/%d.%s", 1, "jpg") // "9a/db/e0/1.jpg"
 ```
 
 ### structures
