@@ -11,6 +11,7 @@ import (
 
 type LinoS3Piece struct {
 	client *s3.Client
+
 	bucket string
 	key    string
 
